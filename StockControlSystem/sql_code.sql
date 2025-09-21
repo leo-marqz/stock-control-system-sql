@@ -33,3 +33,7 @@ VALUES
 ('Home Appliances'),
 ('Office Supplies');
 GO
+
+-- Leemos todos los datos de la tabla de categorias.
+SELECT * FROM Categories;
+GO
