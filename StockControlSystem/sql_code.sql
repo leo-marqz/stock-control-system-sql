@@ -132,3 +132,17 @@ GO
 -- Obtenemos todos los proveedores.
 SELECT * FROM Suppliers;
 GO
+
+-- Buscando un proveedor apartir de su nombre y actualizamos su email.
+UPDATE Suppliers
+SET Email = 'contact@gourmetgoods.com',
+    LastModifiedDate = GETDATE()
+WHERE SupplierName = 'Gourmet Goods Co.';
+GO
+
+-- Aplicamos borrado logico sobre un registro en la tabla de proveedores
+UPDATE Suppliers
+SET DeletedDate = GETDATE()
+WHERE SupplierName = 'Office Essentials LLC';
+GO
+
