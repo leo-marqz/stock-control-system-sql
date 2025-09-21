@@ -91,3 +91,17 @@ SELECT *
 FROM Categories
 WHERE DeletedDate IS NOT NULL;
 GO
+
+-- Creamos la tabla que contiene datos de proveedores
+CREATE TABLE Suppliers (
+    SupplierID INT PRIMARY KEY IDENTITY(1,1),
+    SupplierName NVARCHAR(100) NOT NULL,
+    ContactName NVARCHAR(100),
+    PhoneNumber NVARCHAR(20),
+    Email NVARCHAR(100),
+    CreatedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
+    LastModifiedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
+    DeletedDate DATETIME2 NULL
+);
+GO
+
