@@ -63,3 +63,22 @@ VALUES
 ('Artículos de Jardinería'),
 ('Ropa de Invierno');
 GO
+
+-- Actualizamos uno de los registros erroneos
+UPDATE Categories
+SET CategoryName = 'Libros',
+    LastModifiedDate = GETDATE()
+WHERE CategoryName = 'Libros de Cocina';
+GO
+
+-- Aplicamos el borrado suave sobre los registros erroneos
+UPDATE Categories
+SET DeletedDate = GETDATE()
+WHERE CategoryName IN ('Libros', 'Artículos de Jardinería', 'Ropa de Invierno');
+GO
+
+-- Visualizamos los registros a los que se les aplico el borrado suave o logico
+SELECT *
+FROM Categories
+WHERE DeletedDate IS NOT NULL;
+GO
