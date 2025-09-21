@@ -210,3 +210,30 @@ GO
 -- Visualizamos los proveedores activos llamando la vista que recien creamos.
 SELECT * FROM vw_ActiveSuppliers;
 GO
+
+-- Ya que no garantizamos un orden concreto con las vistas.
+-- Crearemos un Stored Procedure para realizar de mejor manera esta tarea.
+CREATE PROCEDURE sp_GetActiveSuppliers
+AS
+BEGIN
+    SELECT 
+        SupplierID, 
+        SupplierName,
+        ShortDescription,
+        ContactName, 
+        PhoneNumber,
+        Email,
+        CreatedDate,
+        LastModifiedDate
+    FROM 
+        Suppliers
+    WHERE 
+        DeletedDate IS NULL
+    ORDER BY 
+        SupplierName ASC;
+END;
+GO
+
+-- Llamamos al stored procedure para verificar que todo funciona como queremos.
+EXEC sp_GetActiveSuppliers;
+GO
