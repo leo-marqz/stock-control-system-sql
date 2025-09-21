@@ -105,3 +105,7 @@ CREATE TABLE Suppliers (
 );
 GO
 
+-- Visualizamos la estructura de la tabla.
+EXEC sp_help 'Suppliers';
+GO
+
