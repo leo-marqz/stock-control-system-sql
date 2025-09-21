@@ -1,10 +1,14 @@
 
--- Creamos la base de datos para el sistema de control de existencias.
-CREATE DATABASE StockControlSystem;
-GO
+-- Verificamos que la base de datos no existe en el servidor
+IF DB_ID('StockControlSystem') IS NULL
+BEGIN
+    -- Creamos la base de datos en el servidor MSSQL Server.
+    CREATE DATABASE StockControlSystem;
+END;
 
 -- Llamamos la base de datos
 USE StockControlSystem;
+GO
 
 --Tablas sin dependencias:
 -- * Categories
