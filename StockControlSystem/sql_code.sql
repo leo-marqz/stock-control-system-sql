@@ -25,3 +25,11 @@ CREATE TABLE Categories (
     DeletedDate DATETIME2 NULL
 );
 GO
+
+-- Insertamos datos en la tabla de Categorias.
+INSERT INTO Categories (CategoryName)
+VALUES 
+('Electronics'),
+('Home Appliances'),
+('Office Supplies');
+GO
