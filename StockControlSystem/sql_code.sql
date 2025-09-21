@@ -82,3 +82,15 @@ SELECT *
 FROM Categories
 WHERE DeletedDate IS NOT NULL;
 GO
+
+-- Visualizamos todas las categorias activas
+SELECT *
+FROM Categories
+WHERE DeletedDate IS NULL;
+GO
+
+-- Visualizamos todas las categorias sin excepcion.
+-- Select all categories from the table.
+SELECT *
+FROM Categories;
+GO
