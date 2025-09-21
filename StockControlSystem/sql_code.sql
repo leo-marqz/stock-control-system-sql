@@ -120,3 +120,15 @@ FROM
 WHERE
     TABLE_NAME = 'Suppliers';
 GO
+
+-- Insertamos datos en la tabla de Suppliers.
+INSERT INTO Suppliers (SupplierName, ContactName, PhoneNumber, Email)
+VALUES 
+('Tech Innovations Inc.', 'John Smith', '555-1234', 'jsmith@techinnovations.com'),
+('Gourmet Goods Co.', 'Maria Rodriguez', '555-5678', 'mrodriguez@gourmetgoods.com'),
+('Office Essentials LLC', 'David Chen', '555-9012', 'dchen@officeessentials.com');
+GO
+
+-- Obtenemos todos los proveedores.
+SELECT * FROM Suppliers;
+GO
