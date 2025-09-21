@@ -37,3 +37,21 @@ GO
 -- Leemos todos los datos de la tabla de categorias.
 SELECT * FROM Categories;
 GO
+
+-- Actualizamos la categoria con id 1 'Electronics' a 'Smartphones'
+UPDATE Categories
+SET CategoryName = 'Smartphones',
+    LastModifiedDate = GETDATE()
+WHERE CategoryID = 1;
+GO
+
+-- Actualizamos la categoria con id 2 'Home Appliances' a 'Kitchen Appliances'
+UPDATE Categories
+SET CategoryName = 'Kitchen Appliances',
+    LastModifiedDate = GETDATE()
+WHERE CategoryID = 2;
+GO
+
+
+
+
