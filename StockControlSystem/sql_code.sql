@@ -52,6 +52,42 @@ SET CategoryName = 'Kitchen Appliances',
 WHERE CategoryID = 2;
 GO
 
+-- Insertamos mas categorias.
+INSERT INTO Categories (CategoryName)
+VALUES 
+('Laptops'),
+('Smart TVs'),
+('Gaming Consoles'),
+('Headphones'),
+('Webcams'),
+('Home Security');
+GO
 
+-- Insertamos dos categorias mas que usaremos para aplicar 
+-- algo llamado soft-delete.
+INSERT INTO Categories (CategoryName)
+VALUES 
+('Drones'),
+('Fitness Trackers');
+GO
 
+-- Aplicamos el Soft Delete
+UPDATE Categories
+SET DeletedDate = GETDATE()
+WHERE CategoryName IN ('Drones', 'Fitness Trackers');
+GO
 
+-- Visualizamos todos los datos
+SELECT * FROM Categories;
+GO
+
+-- Visualizamos las categorias activas.
+SELECT * FROM Categories
+WHERE DeletedDate IS NULL;
+GO
+
+-- Visualizamos solo las categorias con el soft delete activo
+SELECT *
+FROM Categories
+WHERE DeletedDate IS NOT NULL;
+GO
