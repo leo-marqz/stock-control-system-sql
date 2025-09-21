@@ -238,3 +238,92 @@ GO
 -- Llamamos al stored procedure para verificar que todo funciona como queremos.
 EXEC sp_GetActiveSuppliers;
 GO
+
+-- Creamos la tabla de productos
+CREATE TABLE Products (
+    ProductID INT IDENTITY(1,1),
+    ProductName NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(MAX),
+    Price DECIMAL(10, 2) NOT NULL,
+    Cost DECIMAL(10, 2) NOT NULL,
+    StockQuantity INT NOT NULL,
+    IsActive BIT NOT NULL DEFAULT 1, -- disponibilidad o mantenimiento del producto
+    CategoryID INT,
+    SupplierID INT,
+    CreatedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
+    LastModifiedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
+    DeletedDate DATETIME2 NULL, -- si no es null, significa que este producto ha sido borrado y no debe usarse.
+    CONSTRAINT PK_Products PRIMARY KEY (ProductID),
+    CONSTRAINT FK_Products_Categories FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID),
+    CONSTRAINT FK_Products_Suppliers FOREIGN KEY (SupplierID) REFERENCES Suppliers(SupplierID)
+);
+GO
+
+-- Agregamos productos con sus respectivas relaciones con proveedores y categorias.
+INSERT INTO Products (ProductName, Description, Price, Cost, StockQuantity, CategoryID, SupplierID)
+VALUES 
+('Intel Core i9-13900K', 'Procesador de 24 núcleos para rendimiento extremo en gaming y creación de contenido.', 599.99, 450.00, 50, 8, 1),
+('NVIDIA GeForce RTX 4090', 'Tarjeta gráfica de alto rendimiento para gaming 4K y ray tracing.', 1599.99, 1200.00, 20, 9, 2),
+('Corsair Vengeance RGB 32GB', 'Kit de memoria RAM DDR5 de 32GB con iluminación RGB personalizable.', 149.99, 105.00, 100, 10, 3),
+('Razer DeathAdder V3 Pro', 'Mouse inalámbrico ultraligero para esports con sensor óptico de 30K DPI.', 149.99, 90.00, 75, 5, 4),
+('ASUS ROG Strix B650E-F', 'Placa base ATX con soporte para procesadores AMD Ryzen y conectividad PCIe 5.0.', 249.99, 180.00, 30, 7, 5),
+('Acer Nitro XV272U RV', 'Monitor de 27 pulgadas, QHD, 170Hz para una experiencia de juego fluida.', 299.99, 210.00, 40, 3, 1),
+('Seagate FireCuda 530 1TB', 'Unidad SSD M.2 PCIe Gen4 con velocidades de hasta 7300 MB/s.', 119.99, 85.00, 90, 11, 2),
+('Logitech G Pro X Keyboard', 'Teclado mecánico TKL compacto con switches intercambiables y retroiluminación RGB.', 129.99, 88.00, 60, 4, 3),
+('be quiet! Pure Base 500DX', 'Gabinete de PC con diseño optimizado para flujo de aire y panel de vidrio templado.', 109.99, 75.00, 55, 13, 5),
+('Cooler Master Hyper 212', 'Disipador de CPU con 4 heatpipes de contacto directo para una refrigeración eficiente.', 49.99, 32.00, 120, 8, 4);
+GO
+
+-- Visualizamos los registros ingresados a la tabla de productos.
+SELECT * FROM Products;
+GO
+
+-- Agregaremos 4 productos mas, dos de los cuales los marcaremos como inactivos y los otros dos
+-- como inactivos y que ademas se han borrado, el borrado es un soft-delete o borrado logico.
+-- Insertar 4 productos adicionales
+INSERT INTO Products (ProductName, Description, Price, Cost, StockQuantity, CategoryID, SupplierID)
+VALUES 
+('Logitech G Pro X Headset', 'Auriculares gaming con sonido envolvente 7.1 y micrófono Blue VO!CE.', 129.99, 85.00, 35, 6, 3),
+('EVGA Supernova 750W G6', 'Fuente de alimentación modular de 750W con certificación 80 Plus Gold.', 119.99, 78.00, 50, 12, 2),
+('AMD Ryzen 9 7950X', 'Procesador de 16 núcleos de alto rendimiento con arquitectura Zen 4.', 699.99, 520.00, 15, 8, 2),
+('Cooler Master MasterCase H500', 'Gabinete de PC con dos ventiladores frontales RGB de 200mm para un flujo de aire óptimo.', 119.99, 80.00, 25, 13, 1);
+GO
+
+-- Marcar el producto 'EVGA Supernova 750W G6' como inactivo (IsActive = 0).
+UPDATE Products
+SET IsActive = 0
+WHERE ProductName = 'EVGA Supernova 750W G6';
+GO
+
+-- Aplicar borrado lógico al producto 'Cooler Master MasterCase H500' rellenando DeletedDate.
+UPDATE Products
+SET DeletedDate = GETDATE()
+WHERE ProductName = 'Cooler Master MasterCase H500';
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
