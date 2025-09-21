@@ -6,7 +6,7 @@ BEGIN
     CREATE DATABASE StockControlSystem;
 END;
 
--- Llamamos la base de datos
+-- Llamamos la base de datos para ejecutar comandos sobre esta
 USE StockControlSystem;
 GO
 
