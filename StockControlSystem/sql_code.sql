@@ -152,3 +152,14 @@ VALUES
 ('Vanguardia Tech SV', 'Roberto Castro', '+503 2265-4321', 'r.castro@vanguardia.com', 'Proveedor de hardware de alta gama y sistemas personalizados.');
 GO
 
+-- Visualizamos los datos en el orden deseado nuevamente luego de la carga de datos
+SELECT 
+    SupplierID, SupplierName, ShortDescription, ContactName,  PhoneNumber, Email, 
+    CreatedDate, LastModifiedDate, DeletedDate
+FROM Suppliers;
+
+-- Comando para actualizar la informacion de la descripcion de un proveedor en caso de necesitarlo
+UPDATE Suppliers
+SET ShortDescription = 'Distribuidor de componentes de red y equipos de conectividad.'
+WHERE SupplierName = 'Tecno Red Salvadoreña S.A.';
+
