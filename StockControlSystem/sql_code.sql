@@ -163,3 +163,50 @@ UPDATE Suppliers
 SET ShortDescription = 'Distribuidor de componentes de red y equipos de conectividad.'
 WHERE SupplierName = 'Tecno Red Salvadoreña S.A.';
 
+-- Ingresamos dos proveedores por error que no van con nuestro rubro.
+-- No llevan una descripcion.
+INSERT INTO Suppliers (SupplierName, ContactName, PhoneNumber, Email)
+VALUES 
+('Fresh Veggies Inc.', 'Jane Doe', '555-0001', 'jane.d@freshveggies.com'),
+('Global Textiles', 'Omar Khan', '555-0002', 'omar.k@globaltextiles.com');
+GO
+
+-- Actualizamos la informacion del primer proveedor erroneo y el otro lo marcaremos con eliminado logico.
+
+-- Actualizamos
+UPDATE Suppliers
+SET SupplierName = 'Chipset Solutions Corp.',
+    ContactName = 'Liam Jones',
+    PhoneNumber = '+1 555-7890',
+    Email = 'liam.j@chipsetsolutions.com',
+    ShortDescription = 'Especializado en componentes de chipsets y circuitos integrados.'
+WHERE SupplierName = 'Fresh Veggies Inc.';
+GO
+
+-- Eliminado logico o suave.
+UPDATE Suppliers
+SET DeletedDate = GETDATE()
+WHERE SupplierName = 'Global Textiles';
+GO
+
+-- Creamos una vista
+-- Nos permitira usar un comando corto para ver los registros activos.
+CREATE VIEW vw_ActiveSuppliers AS
+SELECT 
+    SupplierID, 
+    SupplierName,
+    ShortDescription,
+    ContactName, 
+    PhoneNumber,
+    Email,
+    CreatedDate,
+    LastModifiedDate
+FROM 
+    Suppliers
+WHERE 
+    DeletedDate IS NULL;
+GO
+
+-- Visualizamos los proveedores activos llamando la vista que recien creamos.
+SELECT * FROM vw_ActiveSuppliers;
+GO
