@@ -211,8 +211,9 @@ GO
 SELECT * FROM vw_ActiveSuppliers;
 GO
 
--- Ya que no garantizamos un orden concreto con las vistas.
--- Crearemos un Stored Procedure para realizar de mejor manera esta tarea.
+-- Ya que no garantizamos un orden concreto de los registros al obtenerlos con la vista vw_ActiveSuppliers.
+-- Crearemos un Stored Procedure para realizar la tarea y estar seguros del orden en que se obtendra la informacion
+-- de la taba de proveedores.
 CREATE PROCEDURE sp_GetActiveSuppliers
 AS
 BEGIN
