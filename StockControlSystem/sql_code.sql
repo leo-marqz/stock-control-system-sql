@@ -301,6 +301,33 @@ SET DeletedDate = GETDATE()
 WHERE ProductName = 'Cooler Master MasterCase H500';
 GO
 
+-- Creamos la tabla de movimientos.
+-- Creamos la tabla de movimientos de inventario
+CREATE TABLE InventoryMovements (
+    MovementID INT IDENTITY(1,1),
+    ProductID INT NOT NULL,
+    Quantity INT NOT NULL, -- positivo = entrada, negativo = salida
+    MovementType NVARCHAR(20) NOT NULL, -- IN, OUT, ADJUST
+    Reason NVARCHAR(200) NULL, -- detalle adicional
+    CreatedDate DATETIME2 NOT NULL DEFAULT GETDATE(),
+
+    CONSTRAINT PK_InventoryMovements PRIMARY KEY (MovementID),
+    CONSTRAINT FK_InventoryMovements_Products FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+    CONSTRAINT CK_InventoryMovements_Type CHECK (MovementType IN ('IN', 'OUT', 'ADJUST'))
+);
+GO
+
+-- Agregamos un campo llamado ReferenceMovementID.
+-- Este nos permitira referenciar a un movimiento anterior sea por razones de corregir datos o anular.
+-- Esto nos permite llevar una trazabilidad inmutable.
+-- Aplicamos el patron llamado self-referencing foreign key.
+ALTER TABLE InventoryMovements
+ADD ReferenceMovementID INT NULL
+    CONSTRAINT FK_InventoryMovements_Self
+    FOREIGN KEY (ReferenceMovementID) REFERENCES InventoryMovements(MovementID);
+
+-- Visualizamos la estructura de la tabla.
+EXEC sp_help 'InventoryMovements';
 
 
 
