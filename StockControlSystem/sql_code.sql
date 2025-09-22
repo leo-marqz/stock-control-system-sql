@@ -341,7 +341,117 @@ SET StockQuantity = 0,
 -- Consultamos la tabla de Products.
 SELECT * FROM Products;
 
+-- Creamos el trigger trg_InventoryMovements_Validate.
+-- Este trigger supervisa todas las inserciones en InventoryMovements: ingresos (IN), salidas (OUT) y ajustes (ADJUST).
+-- Valida que cada movimiento sea correcto según las reglas de negocio y, si es válido, lo registra.
+-- Además, actualiza automáticamente la tabla Products para reflejar los cambios de stock.
+-- Inicialmente, todos los productos se crean con stock en cero, por lo que los movimientos serán responsables de incrementarlo o decrementarlo.
+-- Nota: Este enfoque garantiza trazabilidad y consistencia, aunque puede ser más lento que una actualización directa de stock.
 
+CREATE OR ALTER TRIGGER trg_InventoryMovements_Validate
+ON InventoryMovements --tabla a supervisar
+AFTER INSERT -- evento a procesar
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- =======================================================================
+    -- Declaramos variables para iterar sobre cada registro insertado
+    -- =======================================================================
+    DECLARE @MovementID INT,
+            @ProductID INT,
+            @Qty INT,
+            @Type NVARCHAR(20),
+            @ReferenceID INT;
+
+    -- =======================================================================
+    -- Usamos un cursor para procesar cada registro insertado individualmente
+    -- Esto es importante porque inserted puede contener múltiples filas en un solo INSERT
+    -- =======================================================================
+    DECLARE movement_cursor CURSOR FOR
+    SELECT MovementID, ProductID, Quantity, MovementType, ReferenceMovementID
+    FROM inserted;
+
+    OPEN movement_cursor;
+    FETCH NEXT FROM movement_cursor INTO @MovementID, @ProductID, @Qty, @Type, @ReferenceID;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- ===================================================================
+        -- Validaciones generales antes de actualizar stock
+        -- ===================================================================
+        -- Ingresos (IN) deben ser mayores a cero
+        IF (@Type = 'IN' AND @Qty <= 0)
+        BEGIN
+            RAISERROR('Ingreso de stock debe ser mayor a cero.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- Salidas (OUT) deben ser mayores a cero y no superar el stock actual
+        IF (@Type = 'OUT')
+        BEGIN
+            IF @Qty <= 0
+            BEGIN
+                RAISERROR('Salida de stock debe ser mayor a cero.', 16, 1);
+                ROLLBACK TRANSACTION;
+                RETURN;
+            END
+
+            DECLARE @CurrentStock INT;
+            SELECT @CurrentStock = StockQuantity FROM Products WHERE ProductID = @ProductID;
+
+            IF @Qty > @CurrentStock
+            BEGIN
+                RAISERROR('No hay suficiente stock para esta salida.', 16, 1);
+                ROLLBACK TRANSACTION;
+                RETURN;
+            END
+        END
+
+        -- Ajustes (ADJUST) no pueden ser cero, pueden ser positivos o negativos
+        IF (@Type = 'ADJUST' AND @Qty = 0)
+        BEGIN
+            RAISERROR('El ajuste no puede ser cero.', 16, 1);
+            ROLLBACK TRANSACTION;
+            RETURN;
+        END
+
+        -- ===================================================================
+        -- Actualización del stock en Products
+        -- ===================================================================
+        -- Ingresos (IN) y ajustes positivos
+        IF @Type = 'IN' OR (@Type = 'ADJUST' AND @Qty > 0)
+        BEGIN
+            UPDATE Products
+            SET StockQuantity = StockQuantity + @Qty,
+                LastModifiedDate = GETDATE()
+            WHERE ProductID = @ProductID;
+        END
+        -- Salidas (OUT) y ajustes negativos
+        ELSE IF @Type = 'OUT' OR (@Type = 'ADJUST' AND @Qty < 0)
+        BEGIN
+            -- Para salidas, restamos directamente la cantidad
+            UPDATE Products
+            SET StockQuantity = StockQuantity - @Qty * (CASE WHEN @Qty < 0 THEN -1 ELSE 1 END),
+                LastModifiedDate = GETDATE()
+            WHERE ProductID = @ProductID;
+        END
+
+        -- ===================================================================
+        -- Nota sobre ReferenceMovementID
+        -- ===================================================================
+        -- Si se trata de un ajuste (ADJUST), ReferenceMovementID puede almacenar
+        -- el ID del movimiento original que se corrige. Esto permite trazabilidad
+        -- completa de correcciones sobre movimientos previos.
+
+        FETCH NEXT FROM movement_cursor INTO @MovementID, @ProductID, @Qty, @Type, @ReferenceID;
+    END
+
+    CLOSE movement_cursor;
+    DEALLOCATE movement_cursor;
+END;
+GO
 
 
 
