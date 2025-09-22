@@ -329,10 +329,17 @@ ADD ReferenceMovementID INT NULL
 -- Visualizamos la estructura de la tabla.
 EXEC sp_help 'InventoryMovements';
 
+--Visualizamos los datos de la tabla sin realizar uniones aun.
+SELECT * FROM InventoryMovements;
 
+-- Eliminamos el stock para seguir de la forma correcta.
+-- Agregar stock a los productos o debitarles a traves de movimientos.
+UPDATE Products
+SET StockQuantity = 0,
+    LastModifiedDate = GETDATE();
 
-
-
+-- Consultamos la tabla de Products.
+SELECT * FROM Products;
 
 
 
